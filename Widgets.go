@@ -687,6 +687,72 @@ func InputInt(label string, value *int32) bool {
 	return InputIntV(label, value, 1, 100, 0)
 }
 
+type dataType int
+
+const (
+	dataTypeS8 dataType = iota
+	dataTypeU8
+	dataTypeS16
+	dataTypeU16
+	dataTypeS32
+	dataTypeU32
+	dataTypeS64
+	dataTypeU64
+	dataTypeFloat
+	dataTypeDouble
+)
+
+func getDataType(ptr interface{}) dataType {
+	switch ptr.(type) {
+	case *uint16:
+		return dataTypeU16
+	case *uint32:
+		return dataTypeU32
+	default:
+		panic("unknown type")
+	}
+}
+
+func InputScalar(label string, ptr interface{}) bool {
+	return InputScalarV(label, ptr, nil, nil, "", 0)
+}
+
+func InputScalarV(label string, ptr, step, stepFast interface{}, format string, flags InputTextFlags) bool {
+	labelArg, labelFin := wrapString(label)
+	defer labelFin()
+	formatArg, formatFin := wrapStringOrNull(format)
+	defer formatFin()
+
+	dt := getDataType(ptr)
+
+	ensureSameTypes(dt, step, stepFast)
+
+	valueArg, valueFin := wrapNumberPointer(ptr)
+	defer valueFin()
+
+	stepArg := wrapNumberConst(step)
+	stepFastArg := wrapNumberConst(stepFast)
+
+	return C.iggInputScalar(labelArg, C.int(dt), valueArg, stepArg, stepFastArg, formatArg, C.int(flags)) != 0
+}
+
+func ensureSameTypes(dt dataType, ts ...interface{}) {
+	for _, t := range ts {
+		switch dt {
+		case dataTypeU16:
+			_, ok := t.(uint16)
+			if !ok {
+				panic("wrong")
+			}
+		case dataTypeU32:
+			_, ok := t.(uint32)
+			if !ok {
+				panic("oh no")
+			}
+		}
+	}
+}
+
 // ColorEditFlags for ColorEdit3V(), etc.
 type ColorEditFlags int
 

@@ -42,6 +42,47 @@ func wrapInt32(goValue *int32) (wrapped *C.int, finisher func()) {
 	return
 }
 
+func wrapNumberConst(goValue interface{}) (wrapped unsafe.Pointer) {
+	if goValue != nil {
+		switch v := goValue.(type) {
+		case uint16:
+			cValue := C.uint16_t(v)
+			wrapped = unsafe.Pointer(&cValue)
+		case uint32:
+			cValue := C.uint32_t(v)
+			wrapped = unsafe.Pointer(&cValue)
+		default:
+			panic("unsupported type")
+		}
+	}
+	return
+}
+
+func wrapNumberPointer(goValue interface{}) (wrapped unsafe.Pointer, finisher func()) {
+	if goValue != nil {
+		switch v := goValue.(type) {
+		case *uint16:
+			cValue := C.uint16_t(*v)
+			wrapped = unsafe.Pointer(&cValue)
+			finisher = func() {
+				*v = uint16(cValue)
+			}
+		case *uint32:
+			cValue := C.uint32_t(*v)
+			wrapped = unsafe.Pointer(&cValue)
+			finisher = func() {
+				*v = uint32(cValue)
+			}
+		default:
+			panic("unsupported type")
+		}
+
+	} else {
+		finisher = func() {}
+	}
+	return
+}
+
 func wrapFloat(goValue *float32) (wrapped *C.float, finisher func()) {
 	if goValue != nil {
 		cValue := C.float(*goValue)
@@ -58,6 +99,17 @@ func wrapFloat(goValue *float32) (wrapped *C.float, finisher func()) {
 func wrapString(value string) (wrapped *C.char, finisher func()) {
 	wrapped = C.CString(value)
 	finisher = func() { C.free(unsafe.Pointer(wrapped)) } // nolint: gas
+	return
+}
+
+func wrapStringOrNull(value string) (wrapped *C.char, finisher func()) {
+	if value == "" {
+		// wrapped = C.CString()
+		finisher = func() {}
+	} else {
+		wrapped = C.CString(value)
+		finisher = func() { C.free(unsafe.Pointer(wrapped)) } // nolint: gas
+	}
 	return
 }
 

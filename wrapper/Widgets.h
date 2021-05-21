@@ -45,6 +45,7 @@ extern IggBool iggVSliderInt(char const *label, IggVec2 const *size, int *value,
 extern IggBool iggInputTextSingleline(char const *label, char const *hint, char *buf, unsigned int bufSize, int flags, int callbackKey);
 extern IggBool iggInputTextMultiline(char const *label, char *buf, unsigned int bufSize, IggVec2 const *size, int flags, int callbackKey);
 
+extern IggBool iggInputScalar(char const *label, int dataType, void *data, void *step, void *stepFast, const char *format, int flags);
 extern IggBool iggInputInt(char const *label, int *value, int step, int step_fast, int flags);
 
 extern IggBool iggColorEdit3(char const *label, float *col, int flags);

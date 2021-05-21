@@ -173,6 +173,11 @@ IggBool iggInputInt(char const *label, int *value, int step, int step_fast, int 
    return ImGui::InputInt(label, value, step, step_fast, flags) ? 1 : 0;
 }
 
+IggBool iggInputScalar(char const *label, int dataType, void *data, void *step, void *stepFast, const char *format, int flags)
+{
+   return ImGui::InputScalar(label, dataType, data, step, stepFast, format, flags) ? 1 : 0;
+}
+
 IggBool iggColorEdit3(char const *label, float *col, int flags)
 {
    return ImGui::ColorEdit3(label, col, flags) ? 1 : 0;
