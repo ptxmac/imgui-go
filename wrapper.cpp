@@ -11,6 +11,18 @@
 #include "misc/freetype/imgui_freetype.cpp"
 #endif
 
+// TODO: guard implot
+
+#include "implot.h"
+#include "implot.cpp"
+#include "implot_items.cpp"
+#include "implot_demo.cpp"
+
+
+#include "implot/wrapper/Context.cpp"
+#include "implot/wrapper/Demo.cpp"
+
+
 // imgui-go code
 #include "wrapper/Context.cpp"
 #include "wrapper/Focus.cpp"
